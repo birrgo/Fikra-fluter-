@@ -1,10 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
+import 'menu_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +26,44 @@ class FikraProApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFFFAFBFC),
         fontFamily: 'Plus Jakarta Sans',
       ),
-      home: const HomeScreen(),
+      home: const SplashScreen(),
+    );
+  }
+}
+
+// --- SPLASH / WELCOME SCREEN WITH s1.png ---
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Transition to HomeScreen after initial splash display delay
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF081B38),
+      body: SizedBox.expand(
+        child: Image.asset(
+          'assets/images/s1.png',
+          fit: BoxFit.cover,
+        ),
+      ),
     );
   }
 }
@@ -199,11 +236,30 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF081B38),
-        title: const Text('Fikra Pro', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
+        elevation: 0,
+        title: Row(
+          children: [
+            // App Logo Image from assets/images/s.png
+            Image.asset(
+              'assets/images/s.png',
+              width: 28,
+              height: 28,
+              errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+            ),
+            const SizedBox(width: 10),
+            const Text(
+              'Fikra Pro',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16),
+            ),
+          ],
+        ),
         leading: IconButton(
           icon: const Icon(Icons.menu, color: Colors.white),
           onPressed: () {
-            // Implement drawer or menu actions here
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MenuScreen()),
+            );
           },
         ),
       ),
