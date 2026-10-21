@@ -31,22 +31,24 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Check Flutter
-        run: flutter --version
-
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Check for old Android embedding
+      - name: Inspect Android manifests
+        run: |
+          find android -name AndroidManifest.xml \
+            -print -exec cat {} \;
+
+      - name: Search project for old embedding
         run: |
           grep -R -n -E \
             'io\.flutter\.app\.|PluginRegistry\.Registrar|registerWith\(' \
-            android lib || true
+            android lib pubspec.yaml pubspec.lock || true
 
-      - name: Build installable APK
+      - name: Build debug APK
         run: flutter build apk --debug -v
 
-      - name: Upload APK
+      - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
           name: Fikra-Pro-Installable-APK
