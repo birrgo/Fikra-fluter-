@@ -1,14 +1,9 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.fikra_pro">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
         android:label="Fikra Pro"
+        android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-
-        <!-- Explicit Flutter v2 Embedding Declaration -->
-        <meta-data
-            android:name="flutterEmbedding"
-            android:value="2" />
 
         <!-- Official AdMob Sample Test ID -->
         <meta-data
@@ -29,6 +24,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- Explicit Flutter v2 Embedding Declaration -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
 
     </application>
 </manifest>
