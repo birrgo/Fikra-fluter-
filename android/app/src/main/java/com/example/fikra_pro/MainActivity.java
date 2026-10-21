@@ -1,4 +1,5 @@
-package com.example.fikra_pro;
+
+package com.fikrapro.app;
 
 import io.flutter.embedding.android.FlutterActivity;
 
