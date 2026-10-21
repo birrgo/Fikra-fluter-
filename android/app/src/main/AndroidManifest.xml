@@ -6,12 +6,12 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
-        <!-- Explicit Flutter v2 Embedding Registration -->
+        <!-- Explicit Flutter v2 Embedding Declaration -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
 
-        <!-- Official Google Sample AdMob App ID for Testing -->
+        <!-- AdMob Sample Test ID -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713"/>
