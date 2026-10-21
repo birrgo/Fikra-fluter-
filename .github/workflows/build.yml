@@ -22,13 +22,15 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.2' # Pinning to a stable compatible version
+          flutter-version: '3.19.6'
           channel: 'stable'
 
       - name: Install Dependencies
-        run: flutter pub get
+        run: |
+          flutter clean
+          flutter pub get
 
-      - name: Build Debug Installable APK
+      - name: Build Debug APK
         run: flutter build apk --debug
 
       - name: Upload APK Artifact
