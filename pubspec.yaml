@@ -1,3 +1,11 @@
+name: fikra_pro
+description: A new Flutter project.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
 dependencies:
   flutter:
     sdk: flutter
@@ -6,3 +14,19 @@ dependencies:
   google_mobile_ads: ^5.2.0
   cached_network_image: ^3.4.0
   intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  image_path: "assets/images/s.png"
+  android: true
+  ios: false
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
