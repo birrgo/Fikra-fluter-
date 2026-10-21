@@ -5,6 +5,10 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 import 'menu_screen.dart';
+// Note: Imports for new screens would go here, e.g.,
+// import 'online_jobs_screen.dart';
+// import 'tech_hub_screen.dart';
+// import 'social_hub_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,6 +72,26 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
+// --- PLACEHOLDER SCREENS ---
+class OnlineJobsScreen extends StatelessWidget {
+  const OnlineJobsScreen({super.key});
+  @override
+  Widget build(BuildContext context) => const Center(child: Text("Online Jobs Screen"));
+}
+
+class TechHubScreen extends StatelessWidget {
+  const TechHubScreen({super.key});
+  @override
+  Widget build(BuildContext context) => const Center(child: Text("Tech Hub Screen"));
+}
+
+class SocialHubScreen extends StatelessWidget {
+  const SocialHubScreen({super.key});
+  @override
+  Widget build(BuildContext context) => const Center(child: Text("Social Hub Screen"));
+}
+
+// --- PARENT HOME SCREEN WITH NAVIGATION ---
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -79,9 +103,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
   static const String appNodeName = "app14";
 
-  List<Map<dynamic, dynamic>> _broadcasts = [];
-  bool _isLoading = true;
-  
+  int _currentIndex = 0; // State for BottomNavigationBar
+
   // AdMob config objects
   Map<dynamic, dynamic> _adConfig = {};
   BannerAd? _bannerAd;
@@ -94,7 +117,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _loadAdConfigAndInit();
-    _fetchDatabaseNews();
   }
 
   @override
@@ -188,6 +210,125 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     )..load();
   }
 
+  // --- UI BUILDER ---
+  @override
+  Widget build(BuildContext context) {
+    // List of screens to display, order must match BottomNavigationBarItems
+    final List<Widget> _screens = [
+      FikraProNewsList(adConfig: _adConfig), // The original content widget
+      const OnlineJobsScreen(),
+      const TechHubScreen(),
+      const SocialHubScreen(),
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF081B38),
+        elevation: 0,
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/images/s.png',
+              width: 28,
+              height: 28,
+              errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+            ),
+            const SizedBox(width: 10),
+            const Text(
+              'Fikra Pro',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16),
+            ),
+          ],
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.menu, color: Colors.white),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MenuScreen()),
+            );
+          },
+        ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: IndexedStack( // efficient for switching screens
+              index: _currentIndex,
+              children: _screens,
+            ),
+          ),
+          if (_isBannerLoaded && _bannerAd != null)
+            SizedBox(
+              height: _bannerAd!.size.height.toDouble(),
+              width: _bannerAd!.size.width.toDouble(),
+              child: AdWidget(ad: _bannerAd!),
+            ),
+        ],
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.only(bottom: 24), // mimic the dark-theme bar look
+        color: const Color(0xFF131313), // dark theme from image
+        child: BottomNavigationBar(
+          backgroundColor: const Color(0xFF131313), // dark theme from image
+          currentIndex: _currentIndex,
+          type: BottomNavigationBarType.fixed, // show all items
+          selectedItemColor: Colors.blue[600], // blue selected color from image
+          unselectedItemColor: Colors.grey, // unselected grey from image
+          selectedLabelStyle: const TextStyle(color: Colors.white), // white selected text
+          unselectedLabelStyle: const TextStyle(color: Colors.grey), // unselected grey text
+          showUnselectedLabels: true, // as seen in image
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.grid_view), // blocks for online/categories
+              label: 'Online',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.engineering), // chip/cog for tech/bookmarks style from image but label is tech
+              label: 'Tech',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.group), // group for social/profile from image but label is social
+              label: 'Social',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// --- ENCAPSULATED NEWS LIST WIDGET ---
+class FikraProNewsList extends StatefulWidget {
+  final Map<dynamic, dynamic> adConfig;
+  const FikraProNewsList({super.key, required this.adConfig});
+
+  @override
+  State<FikraProNewsList> createState() => _FikraProNewsListState();
+}
+
+class _FikraProNewsListState extends State<FikraProNewsList> {
+  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
+  static const String appNodeName = "app14";
+
+  List<Map<dynamic, dynamic>> _broadcasts = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDatabaseNews();
+  }
+
   // --- FIREBASE NEWS STREAMING ---
   void _fetchDatabaseNews() {
     List<Map<dynamic, dynamic>> tempList = [];
@@ -224,70 +365,28 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _sortAndSaveList(List<Map<dynamic, dynamic>> list) {
     list.sort((a, b) => b['resolvedTimestamp'].compareTo(a['resolvedTimestamp']));
-    setState(() {
-      _broadcasts = list;
-      _isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _broadcasts = list;
+        _isLoading = false;
+      });
+    }
   }
 
-  // --- UI BUILDER ---
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF081B38),
-        elevation: 0,
-        title: Row(
-          children: [
-            // App Logo Image from assets/images/s.png
-            Image.asset(
-              'assets/images/s.png',
-              width: 28,
-              height: 28,
-              errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
-            ),
-            const SizedBox(width: 10),
-            const Text(
-              'Fikra Pro',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16),
-            ),
-          ],
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MenuScreen()),
-            );
-          },
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _broadcasts.isEmpty
-                    ? const Center(child: Text("No updates posted today."))
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _broadcasts.length,
-                        itemBuilder: (context, index) {
-                          final item = _broadcasts[index];
-                          return NewsCard(item: item, adConfig: _adConfig);
-                        },
-                      ),
-          ),
-          if (_isBannerLoaded && _bannerAd != null)
-            SizedBox(
-              height: _bannerAd!.size.height.toDouble(),
-              width: _bannerAd!.size.width.toDouble(),
-              child: AdWidget(ad: _bannerAd!),
-            ),
-        ],
-      ),
-    );
+    return _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : _broadcasts.isEmpty
+            ? const Center(child: Text("No updates posted today."))
+            : ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: _broadcasts.length,
+                itemBuilder: (context, index) {
+                  final item = _broadcasts[index];
+                  return NewsCard(item: item, adConfig: widget.adConfig);
+                },
+              );
   }
 }
 
