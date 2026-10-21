@@ -1,4 +1,4 @@
-name: Build Flutter APK
+name: Build Fikra Pro APK
 
 on:
   push:
@@ -28,11 +28,16 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build Debug APK
+      - name: Regenerate Native Android Project Files
+        run: |
+          rm -rf android
+          flutter create . --platforms=android --org=com.example --project-name=fikra_pro
+
+      - name: Build Debug Installable APK
         run: flutter build apk --debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
+          name: fikra-pro-debug
           path: build/app/outputs/flutter-apk/app-debug.apk
