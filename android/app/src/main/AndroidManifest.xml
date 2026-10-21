@@ -3,7 +3,6 @@
 
     <application
         android:label="Fikra Pro"
-        android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
         <!-- Explicit Flutter v2 Embedding Declaration -->
@@ -11,7 +10,7 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-        <!-- AdMob Sample Test ID -->
+        <!-- Official AdMob Sample Test ID -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713"/>
