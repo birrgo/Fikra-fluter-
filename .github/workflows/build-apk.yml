@@ -37,19 +37,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Inspect Android manifests
-        run: |
-          find android -name AndroidManifest.xml \
-            -print -exec cat {} \;
+      - name: Generate missing Android/Gradle wrapper files
+        run: flutter create . --platforms=android
 
-      - name: Search project for old embedding
-        run: |
-          grep -R -n -E \
-            'io\.flutter\.app\.|PluginRegistry\.Registrar|registerWith\(' \
-            android lib pubspec.yaml pubspec.lock || true
-
-      - name: Clean build cache
-        run: flutter clean
+      - name: Make Gradle wrapper executable
+        run: chmod +x android/gradlew
 
       - name: Build debug APK
         run: flutter build apk --debug -v
