@@ -1,4 +1,3 @@
-
 name: Build Fikra Pro Installable APK
 
 on:
@@ -28,6 +27,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.29.0'
           channel: stable
           cache: true
 
@@ -44,6 +44,9 @@ jobs:
           grep -R -n -E \
             'io\.flutter\.app\.|PluginRegistry\.Registrar|registerWith\(' \
             android lib pubspec.yaml pubspec.lock || true
+
+      - name: Clean build cache
+        run: flutter clean
 
       - name: Build debug APK
         run: flutter build apk --debug -v
